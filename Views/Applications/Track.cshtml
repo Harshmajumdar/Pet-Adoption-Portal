@@ -1,0 +1,129 @@
+@model IEnumerable<AdoptionApplication>
+@{
+    ViewData["Title"] = "Track Application Status";
+    var email = (string?)ViewBag.Email;
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-9">
+        <div class="text-center mb-4">
+            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 mb-2">
+                Real-Time Tracking
+            </span>
+            <h2 class="fw-bold">Track Your Adoption Application</h2>
+            <p class="text-muted" style="max-width: 520px; margin: 0 auto;">
+                Check the latest status of your adoption request. Enter the email address you provided when applying.
+            </p>
+        </div>
+
+        <!-- Search Form Card -->
+        <div class="card border-0 rounded-4 shadow-sm p-4 bg-white mb-4">
+            <form asp-action="Track" method="get" class="row g-2 align-items-center justify-content-center">
+                <div class="col-12 col-sm-8">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 text-muted ps-3">
+                            <i class="bi bi-envelope"></i>
+                        </span>
+                        <input type="email" name="email" value="@email" class="form-control border-start-0 py-2" placeholder="Enter your application email (e.g. sneha@example.com)" required />
+                    </div>
+                </div>
+                <div class="col-12 col-sm-auto">
+                    <button type="submit" class="btn btn-success rounded-pill px-4 py-2 w-100">
+                        <i class="bi bi-search me-1"></i> Check Status
+                    </button>
+                </div>
+            </form>
+            
+            <div class="text-center mt-2">
+                <small class="text-muted">
+                    <i class="bi bi-lightbulb text-warning me-1"></i> Demo sample application: try <code>sneha@example.com</code>
+                </small>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(email))
+        {
+            <div class="card border-0 rounded-4 shadow-sm p-4 bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">Applications for <span class="text-success">@email</span></h5>
+                    <span class="badge bg-light text-dark border rounded-pill px-3">@Model.Count() found</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Pet</th>
+                                <th>Submission Date</th>
+                                <th>Applicant Details</th>
+                                <th>Application Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var a in Model)
+                            {
+                                var badgeClass = a.Status switch
+                                {
+                                    "Approved" => "bg-success-subtle text-success border border-success-subtle",
+                                    "Rejected" => "bg-danger-subtle text-danger border border-danger-subtle",
+                                    _ => "bg-warning-subtle text-warning border border-warning-subtle"
+                                };
+                                var statusIcon = a.Status switch
+                                {
+                                    "Approved" => "bi-check-circle-fill",
+                                    "Rejected" => "bi-x-circle-fill",
+                                    _ => "bi-hourglass-split"
+                                };
+
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            @if (!string.IsNullOrEmpty(a.Pet?.ImageUrl))
+                                            {
+                                                <img src="@a.Pet.ImageUrl" class="rounded-circle object-fit-cover shadow-xs" width="46" height="46" alt="@a.Pet?.Name" />
+                                            }
+                                            else
+                                            {
+                                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center fs-4" style="width: 46px; height: 46px;">
+                                                    @a.Pet?.Emoji
+                                                </div>
+                                            }
+                                            <div>
+                                                <a asp-controller="Pets" asp-action="Details" asp-route-id="@a.PetId" class="fw-bold text-decoration-none text-dark">
+                                                    @a.Pet?.Name
+                                                </a>
+                                                <div class="small text-muted">@a.Pet?.Species &bull; @a.Pet?.Breed</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>@a.AppliedOn.ToString("dd MMM yyyy")</div>
+                                        <div class="small text-muted">@a.AppliedOn.ToString("hh:mm tt")</div>
+                                    </td>
+                                    <td>
+                                        <div class="small">@a.ApplicantName</div>
+                                        <div class="small text-muted">@a.City</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge @badgeClass rounded-pill px-3 py-2">
+                                            <i class="bi @statusIcon me-1"></i> @a.Status
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (!Model.Any())
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center py-5 text-muted">
+                                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                        No adoption applications found matching <strong>@email</strong>.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,48 @@
+@model Pet
+@{
+    ViewData["Title"] = $"Delete {Model.Name}";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="card border-0 rounded-4 shadow-sm p-4 bg-white">
+            <div class="text-center mb-3">
+                <div class="fs-1 text-danger mb-2"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                <h3 class="fw-bold text-danger mb-1">Delete Rescue Profile</h3>
+                <p class="text-muted small">Are you sure you want to permanently remove <strong>@Model.Name</strong> from the sanctuary records?</p>
+            </div>
+
+            <div class="p-3 bg-light rounded-3 mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" class="rounded-circle object-fit-cover shadow-xs" width="56" height="56" alt="@Model.Name" />
+                    }
+                    else
+                    {
+                        <span class="fs-2">@Model.Emoji</span>
+                    }
+                    <div>
+                        <h5 class="fw-bold mb-0">@Model.Name</h5>
+                        <div class="small text-muted">@Model.Species &bull; @Model.Breed &bull; @Model.AgeText</div>
+                        <span class="badge bg-secondary rounded-pill small mt-1">@Model.Status</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-warning border-0 rounded-3 small mb-4">
+                <i class="bi bi-info-circle me-1"></i> <strong>Note:</strong> Deleting this pet will cascade-delete its linked vaccination history. Pets with submitted adoption applications cannot be deleted.
+            </div>
+
+            <form asp-action="Delete" method="post" class="d-flex gap-2">
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="btn btn-danger btn-lg rounded-pill flex-grow-1">
+                    <i class="bi bi-trash-fill me-1"></i> Yes, Permanently Delete
+                </button>
+                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                    Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+</div>

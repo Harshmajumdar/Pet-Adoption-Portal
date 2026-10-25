@@ -1,0 +1,122 @@
+@model IEnumerable<Pet>
+@{
+    ViewData["Title"] = "Find a Pet - Adoption Gallery";
+    var isStaff = !string.IsNullOrEmpty(Context.Session.GetString("AdminName"));
+    var selectedSpecies = (string?)ViewBag.SelectedSpecies;
+    var totalCount = Model.Count();
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h2 class="fw-bold mb-1">
+            @(isStaff ? "Pet Management & Adoption Gallery" : "Meet Our Rescues Ready for Adoption")
+        </h2>
+        <p class="text-muted mb-0">
+            @(isStaff ? "Staff view: Add new animals, update vaccination schedules, or manage status." : "Filter by species or search by name and breed to find your ideal family companion.")
+        </p>
+    </div>
+
+    @if (isStaff)
+    {
+        <a class="btn btn-success d-flex align-items-center gap-2 rounded-pill px-4" asp-action="Create">
+            <i class="bi bi-plus-circle-fill"></i>
+            <span>Add New Pet</span>
+        </a>
+    }
+</div>
+
+<!-- Modern Filter & Search Bar -->
+<div class="card border-0 rounded-4 shadow-sm p-3 mb-4 bg-white">
+    <form asp-action="Index" method="get" id="petSearchForm" class="row g-2 align-items-center">
+        <!-- Interactive Species Filter Chips -->
+        <div class="col-12 mb-2">
+            <div class="category-chips-bar p-0">
+                <a href="@Url.Action("Index")" class="category-chip @(string.IsNullOrEmpty(selectedSpecies) ? "active" : "")" data-filter-client="true" data-species="">
+                    <span>🐾</span> All Rescues
+                </a>
+                @foreach (var s in PetOptions.Species)
+                {
+                    var emoji = s switch
+                    {
+                        "Dog" => "🐶",
+                        "Cat" => "🐱",
+                        "Rabbit" => "🐰",
+                        "Bird" => "🐦",
+                        _ => "🐾"
+                    };
+                    <a href="@Url.Action("Index", new { species = s, search = ViewBag.Search })" 
+                       class="category-chip @(s == selectedSpecies ? "active" : "")" 
+                       data-filter-client="true" 
+                       data-species="@s">
+                        <span>@emoji</span> @s
+                    </a>
+                }
+            </div>
+        </div>
+
+        <!-- Search Input -->
+        <div class="col-12 col-md-8 col-lg-9">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 rounded-start-pill ps-3 text-muted">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" 
+                       id="petLiveSearchInput" 
+                       name="search" 
+                       value="@ViewBag.Search" 
+                       class="form-control border-start-0 py-2" 
+                       placeholder="Instant search by name or breed (e.g. Bruno, Labrador, Persian)..." />
+                @if (!string.IsNullOrEmpty(ViewBag.Search as string))
+                {
+                    <a href="@Url.Action("Index", new { species = selectedSpecies })" class="btn btn-outline-secondary border-start-0" title="Clear search">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                }
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4 col-lg-3 d-flex gap-2">
+            <button type="submit" class="btn btn-success flex-grow-1 rounded-pill">
+                <i class="bi bi-funnel"></i> Apply Filter
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-3" title="Reset all filters">
+                <i class="bi bi-arrow-counterclockwise"></i>
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Results Header -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="small text-muted">
+        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1" id="petResultCount">
+            @totalCount @(totalCount == 1 ? "pet available" : "pets available")
+        </span>
+    </div>
+    <div class="small text-muted">
+        <i class="bi bi-info-circle me-1"></i> Click any card to view detailed vaccination history
+    </div>
+</div>
+
+<!-- Pets Grid -->
+<div class="row g-4" id="petGalleryGrid">
+    @foreach (var pet in Model)
+    {
+        <div class="col-12 col-sm-6 col-lg-4 pet-grid-item" 
+             data-name="@pet.Name" 
+             data-breed="@(pet.Breed ?? "")" 
+             data-species="@pet.Species">
+            <partial name="_PetCard" model="pet" />
+        </div>
+    }
+</div>
+
+<!-- Client-side No Results Container -->
+<div id="petNoResultsState" class="text-center py-5 my-4" style="display: @(Model.Any() ? "none" : "block");">
+    <div class="fs-1 mb-2">🔍</div>
+    <h4 class="fw-bold text-muted">No companions found</h4>
+    <p class="text-muted small">Try modifying your search query or selecting "All Rescues" above.</p>
+    <a asp-action="Index" class="btn btn-outline-success rounded-pill px-4">
+        Reset Search Filters
+    </a>
+</div>

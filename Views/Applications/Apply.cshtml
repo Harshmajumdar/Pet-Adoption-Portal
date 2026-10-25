@@ -1,0 +1,137 @@
+@model AdoptionApplication
+@{
+    ViewData["Title"] = "Adoption Application";
+    var pet = (Pet)ViewBag.Pet;
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-xl-10">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <a asp-controller="Pets" asp-action="Details" asp-route-id="@pet.Id" class="btn btn-sm btn-outline-secondary rounded-pill">
+                <i class="bi bi-arrow-left"></i> Back to @pet.Name
+            </a>
+            <span class="text-muted">&bull;</span>
+            <span class="small text-muted">Step 2 of 4: Adoption Application</span>
+        </div>
+
+        <div class="row g-4">
+            <!-- Left Column: Pet Summary Preview -->
+            <div class="col-12 col-md-5">
+                <div class="card border-0 rounded-4 shadow-sm overflow-hidden sticky-top" style="top: 90px;">
+                    <div style="height: 220px; overflow: hidden; background: #e2e8f0;">
+                        @if (!string.IsNullOrEmpty(pet.ImageUrl))
+                        {
+                            <img src="@pet.ImageUrl" class="w-100 h-100 object-fit-cover" alt="@pet.Name" />
+                        }
+                        else
+                        {
+                            <div class="w-100 h-100 d-flex align-items-center justify-content-center fs-1 bg-light">
+                                @pet.Emoji
+                            </div>
+                        }
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h4 class="fw-bold mb-0">@pet.Name</h4>
+                            <span class="badge bg-success rounded-pill px-3 py-1">Ready for Home</span>
+                        </div>
+                        <p class="text-muted small mb-3">@pet.Breed &bull; @pet.Species</p>
+
+                        <div class="d-flex flex-wrap gap-1 mb-3">
+                            <span class="badge bg-light text-dark border rounded-pill">@pet.Gender</span>
+                            <span class="badge bg-light text-dark border rounded-pill">@pet.AgeText</span>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">
+                                <i class="bi bi-shield-check"></i> Vaccinated
+                            </span>
+                        </div>
+
+                        <div class="p-3 bg-light rounded-3 small text-muted">
+                            <i class="bi bi-info-circle-fill text-success me-1"></i>
+                            By submitting this application, you are requesting to adopt <strong>@pet.Name</strong>. Our shelter team will review your details to verify pet-friendly living conditions.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Application Form -->
+            <div class="col-12 col-md-7">
+                <div class="card border-0 rounded-4 shadow-sm p-4 bg-white">
+                    <h3 class="fw-bold mb-1">Adoption Application Form</h3>
+                    <p class="text-muted small mb-4">Please provide your verified contact details so we can reach you.</p>
+
+                    <form asp-action="Apply" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 p-2 small mb-3"></div>
+                        <input type="hidden" asp-for="PetId" />
+
+                        <div class="mb-3">
+                            <label asp-for="ApplicantName" class="form-label fw-bold small">Full Legal Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-person"></i></span>
+                                <input asp-for="ApplicantName" class="form-control border-start-0" placeholder="e.g. Priya Sharma" />
+                            </div>
+                            <span asp-validation-for="ApplicantName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-bold small">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-envelope"></i></span>
+                                <input asp-for="Email" type="email" class="form-control border-start-0" placeholder="name@example.com" />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                            <div class="form-text small">You will use this email to track your application status.</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-6 mb-3">
+                                <label asp-for="Phone" class="form-label fw-bold small">10-Digit Mobile Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-telephone"></i></span>
+                                    <input asp-for="Phone" class="form-control border-start-0" placeholder="9876543210" maxlength="10" />
+                                </div>
+                                <span asp-validation-for="Phone" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-sm-6 mb-3">
+                                <label asp-for="City" class="form-label fw-bold small">City / Location</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-geo-alt"></i></span>
+                                    <input asp-for="City" class="form-control border-start-0" placeholder="e.g. Mumbai, Pune" />
+                                </div>
+                                <span asp-validation-for="City" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Reason" class="form-label fw-bold small">Why would you like to adopt @pet.Name?</label>
+                            <textarea asp-for="Reason" class="form-control" rows="4" placeholder="Tell us about your home, daily schedule, and previous experience with pets..."></textarea>
+                            <span asp-validation-for="Reason" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-check p-3 bg-light rounded-3 mb-4">
+                            <input asp-for="HasOtherPets" class="form-check-input ms-0 me-2" id="hasOtherPetsCheck" />
+                            <label asp-for="HasOtherPets" class="form-check-label fw-semibold small" for="hasOtherPetsCheck">
+                                Do you currently have other pets at home?
+                            </label>
+                            <div class="text-muted small ps-4">Helps us ensure social compatibility between animals.</div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3">
+                            <button type="submit" class="btn btn-success btn-lg rounded-pill px-4 flex-grow-1">
+                                <i class="bi bi-send-fill me-1"></i> Submit Adoption Application
+                            </button>
+                            <a asp-controller="Pets" asp-action="Details" asp-route-id="@pet.Id" class="btn btn-outline-secondary rounded-pill px-3">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

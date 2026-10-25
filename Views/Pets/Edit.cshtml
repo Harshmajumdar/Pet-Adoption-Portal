@@ -1,0 +1,99 @@
+@model Pet
+@{
+    ViewData["Title"] = $"Edit {Model.Name}";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary rounded-pill">
+                <i class="bi bi-arrow-left"></i> Back to @Model.Name
+            </a>
+            <span class="text-muted">&bull;</span>
+            <span class="small text-muted">Staff Pet Management</span>
+        </div>
+
+        <div class="card border-0 rounded-4 shadow-sm p-4 bg-white mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="fw-bold mb-0">
+                    <i class="bi bi-pencil-square text-success me-2"></i>Edit @Model.Name's Profile
+                </h3>
+                <span class="badge bg-light text-dark border rounded-pill px-3">Pet #@Model.Id</span>
+            </div>
+
+            <form asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 p-2 small mb-3"></div>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="DateAdded" />
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-bold small">Pet Name</label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <label asp-for="Species" class="form-label fw-bold small">Species</label>
+                        <select asp-for="Species" class="form-select" asp-items="@(new SelectList(PetOptions.Species))">
+                            <option value="">-- Choose Species --</option>
+                        </select>
+                        <span asp-validation-for="Species" class="text-danger small"></span>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <label asp-for="Gender" class="form-label fw-bold small">Gender</label>
+                        <select asp-for="Gender" class="form-select" asp-items="@(new SelectList(PetOptions.Genders))">
+                            <option value="">-- Choose Gender --</option>
+                        </select>
+                        <span asp-validation-for="Gender" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <label asp-for="Breed" class="form-label fw-bold small">Breed</label>
+                        <input asp-for="Breed" class="form-control" />
+                        <span asp-validation-for="Breed" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-sm-6 mb-3">
+                        <label asp-for="AgeInMonths" class="form-label fw-bold small">Age (in Months)</label>
+                        <input asp-for="AgeInMonths" type="number" class="form-control" />
+                        <span asp-validation-for="AgeInMonths" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label fw-bold small">Description / Personality</label>
+                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ImageUrl" class="form-label fw-bold small">Photo Web URL</label>
+                    <input asp-for="ImageUrl" class="form-control" placeholder="https://..." />
+                    <span asp-validation-for="ImageUrl" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Status" class="form-label fw-bold small">Adoption Status</label>
+                    <select asp-for="Status" class="form-select" asp-items="@(new SelectList(PetStatus.All))"></select>
+                    <span asp-validation-for="Status" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <button type="submit" class="btn btn-success btn-lg rounded-pill px-4">
+                        <i class="bi bi-save me-1"></i> Update Profile
+                    </button>
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary rounded-pill px-3">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

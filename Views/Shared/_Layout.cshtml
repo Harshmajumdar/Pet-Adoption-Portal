@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Paws Home Pet Adoption Portal</title>
+    
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3.3 & Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    @{
+        var staffName = Context.Session.GetString("AdminName");
+        var isStaff = !string.IsNullOrEmpty(staffName);
+        var shortlistCount = Context.Session.GetObject<List<int>>("Shortlist")?.Count ?? 0;
+        var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    }
+
+    <!-- Premium Sticky Glassmorphic Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark paws-navbar sticky-top">
+        <div class="container">
+            <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                <span>🐾</span>
+                <span>Paws Home</span>
+                <span class="brand-badge d-none d-sm-inline-block">Adoption &amp; Care</span>
+            </a>
+            
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3 gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link @(currentController == "Home" && currentAction == "Index" ? "active" : "")" asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-house-door"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(currentController == "Pets" && currentAction == "Index" ? "active" : "")" asp-controller="Pets" asp-action="Index">
+                            <i class="bi bi-search-heart"></i> Find a Pet
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(currentController == "Shortlist" ? "active" : "")" asp-controller="Shortlist" asp-action="Index">
+                            <i class="bi bi-heart"></i> Shortlist 
+                            @if (shortlistCount > 0)
+                            {
+                                <span class="badge bg-danger text-white rounded-pill ms-1 badge-pulse">@shortlistCount</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-white text-dark rounded-pill ms-1">0</span>
+                            }
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(currentController == "Applications" && currentAction == "Track" ? "active" : "")" asp-controller="Applications" asp-action="Track">
+                            <i class="bi bi-clock-history"></i> Track Status
+                        </a>
+                    </li>
+                    
+                    @if (isStaff)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link @(currentController == "Applications" && currentAction == "Index" ? "active" : "")" asp-controller="Applications" asp-action="Index">
+                                <i class="bi bi-clipboard-check"></i> Applications
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentController == "Pets" && currentAction == "Create" ? "active" : "")" asp-controller="Pets" asp-action="Create">
+                                <i class="bi bi-plus-circle"></i> Add Pet
+                            </a>
+                        </li>
+                    }
+                </ul>
+
+                <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                    @if (isStaff)
+                    {
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-light rounded-pill dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-shield-check text-warning"></i>
+                                <span>Staff: <strong>@staffName</strong></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                <li><a class="dropdown-item" asp-controller="Applications" asp-action="Index"><i class="bi bi-inbox me-2"></i> Review Applications</a></li>
+                                <li><a class="dropdown-item" asp-controller="Pets" asp-action="Create"><i class="bi bi-plus-circle me-2"></i> Add New Pet</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" asp-controller="Account" asp-action="Logout"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <a class="btn btn-outline-light btn-sm rounded-pill px-3 shadow-sm d-flex align-items-center gap-2" asp-controller="Account" asp-action="Login">
+                            <i class="bi bi-person-lock"></i> Staff Portal
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Body Container -->
+    <main class="container my-4">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm border-0 d-flex align-items-center gap-2" role="alert">
+                <i class="bi bi-check-circle-fill fs-5 text-success"></i>
+                <div class="flex-grow-1">@TempData["Success"]</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm border-0 d-flex align-items-center gap-2" role="alert">
+                <i class="bi bi-exclamation-triangle-fill fs-5 text-danger"></i>
+                <div class="flex-grow-1">@TempData["Error"]</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @RenderBody()
+    </main>
+
+    <!-- Modern Rich Footer -->
+    <footer class="paws-footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-12 col-md-5">
+                    <div class="d-flex align-items-center gap-2 mb-2 text-white">
+                        <span class="fs-4">🐾</span>
+                        <span class="fs-5 fw-bold">Paws Home Animal Shelter</span>
+                    </div>
+                    <p class="small text-muted mb-3" style="max-width: 380px;">
+                        Providing love, medical care, and safe forever homes for rescued pets. Connecting compassionate adopters with furry, feathered, and four-legged companions.
+                    </p>
+                    <div class="d-flex gap-3 text-white-50">
+                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">
+                            <i class="bi bi-shield-check"></i> 100% Medical Vetted
+                        </span>
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill">
+                            <i class="bi bi-heart-fill"></i> Ethical Care
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <h6>Quick Navigation</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
+                        <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li><a asp-controller="Pets" asp-action="Index">Browse All Pets</a></li>
+                        <li><a asp-controller="Shortlist" asp-action="Index">My Shortlist</a></li>
+                        <li><a asp-controller="Applications" asp-action="Track">Track Application Status</a></li>
+                        <li><a asp-controller="Account" asp-action="Login">Shelter Staff Portal</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-6 col-md-4">
+                    <h6>Shelter Information</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
+                        <li><i class="bi bi-geo-alt text-success me-1"></i> Green Valley Care Sanctuary, City Center</li>
+                        <li><i class="bi bi-telephone text-success me-1"></i> +91 98765 43210 (Toll Free)</li>
+                        <li><i class="bi bi-clock text-success me-1"></i> Visiting Hours: 10:00 AM - 6:00 PM (Daily)</li>
+                        <li><i class="bi bi-envelope text-success me-1"></i> contact@pawshome.org</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="paws-footer-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div>
+                    &copy; @DateTime.Now.Year <strong>Paws Home</strong> &bull; Mini Project for <em>Web Technologies with .NET</em> (ASP.NET Core MVC + Entity Framework Core + MySQL).
+                </div>
+                <div class="text-white-50">
+                    Designed with <i class="bi bi-heart-fill text-danger"></i> for Animal Welfare
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

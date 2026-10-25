@@ -1,0 +1,125 @@
+@* Modern Dynamic Pet Card Component *@
+@model Pet
+@{
+    var isStaff = !string.IsNullOrEmpty(Context.Session.GetString("AdminName"));
+    var shortlist = Context.Session.GetObject<List<int>>("Shortlist") ?? new List<int>();
+    var inShortlist = shortlist.Contains(Model.Id);
+    var currentUrl = Context.Request.Path + Context.Request.QueryString;
+    var isAvailable = Model.Status == PetStatus.Available;
+}
+
+<div class="pet-card">
+    <!-- Image Box with Status & Heart Overlays -->
+    <div class="pet-card-image-box">
+        @if (isAvailable)
+        {
+            <div class="badge-status available">
+                <span class="status-dot"></span>
+                <span>Available</span>
+            </div>
+        }
+        else
+        {
+            <div class="badge-status adopted">
+                <i class="bi bi-patch-check-fill"></i>
+                <span>@Model.Status</span>
+            </div>
+        }
+
+        <!-- Shortlist Heart Button -->
+        @if (inShortlist)
+        {
+            <form asp-controller="Shortlist" asp-action="Remove" method="post" class="d-inline">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <input type="hidden" name="returnUrl" value="@currentUrl" />
+                <button type="submit" class="pet-heart-btn active" title="Remove from shortlist" aria-label="Remove from shortlist">
+                    <i class="bi bi-heart-fill"></i>
+                </button>
+            </form>
+        }
+        else
+        {
+            <form asp-controller="Shortlist" asp-action="Add" method="post" class="d-inline">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <input type="hidden" name="returnUrl" value="@currentUrl" />
+                <button type="submit" class="pet-heart-btn" title="Add to shortlist" aria-label="Add to shortlist">
+                    <i class="bi bi-heart"></i>
+                </button>
+            </form>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" class="pet-img-element" alt="@Model.Name" loading="lazy" />
+            <div class="pet-fallback-box w-100 h-100 align-items-center justify-content-center bg-light" style="display: none; font-size: 4rem;">
+                @Model.Emoji
+            </div>
+        }
+        else
+        {
+            <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-light" style="font-size: 4.5rem;">
+                @Model.Emoji
+            </div>
+        }
+    </div>
+
+    <!-- Body Information -->
+    <div class="pet-card-body">
+        <div class="pet-name-title">
+            <span>@Model.Name</span>
+            <span class="fs-6 text-muted" title="@Model.Species">@Model.Emoji</span>
+        </div>
+        
+        <div class="pet-breed-sub">
+            <i class="bi bi-tag text-muted"></i>
+            <span>@(string.IsNullOrWhiteSpace(Model.Breed) ? "Mixed Breed" : Model.Breed)</span>
+        </div>
+
+        <div class="pet-tags-row">
+            <span class="pet-pill species">
+                <i class="bi bi-bookmark-heart"></i> @Model.Species
+            </span>
+            @if (Model.Gender == "Male")
+            {
+                <span class="pet-pill male">
+                    <i class="bi bi-gender-male"></i> Male
+                </span>
+            }
+            else
+            {
+                <span class="pet-pill female">
+                    <i class="bi bi-gender-female"></i> Female
+                </span>
+            }
+            <span class="pet-pill age">
+                <i class="bi bi-calendar3"></i> @Model.AgeText
+            </span>
+        </div>
+
+        <p class="pet-desc-text">
+            @Model.ShortDescription
+        </p>
+    </div>
+
+    <!-- Footer Action Buttons -->
+    <div class="pet-card-footer">
+        <div class="d-flex align-items-center gap-2">
+            <a class="btn btn-sm btn-success flex-grow-1 d-flex align-items-center justify-content-center gap-1" asp-controller="Pets" asp-action="Details" asp-route-id="@Model.Id">
+                <span>View Details &amp; Care</span>
+                <i class="bi bi-arrow-right"></i>
+            </a>
+
+            @if (isStaff)
+            {
+                <div class="btn-group">
+                    <a class="btn btn-sm btn-outline-secondary" asp-controller="Pets" asp-action="Edit" asp-route-id="@Model.Id" title="Edit Pet">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <a class="btn btn-sm btn-outline-danger" asp-controller="Pets" asp-action="Delete" asp-route-id="@Model.Id" title="Delete Pet">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

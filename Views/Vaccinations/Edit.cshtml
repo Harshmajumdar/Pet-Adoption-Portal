@@ -1,0 +1,67 @@
+@model VaccinationRecord
+@{
+    ViewData["Title"] = "Edit Care Record";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-7">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <a asp-controller="Pets" asp-action="Details" asp-route-id="@Model.PetId" class="btn btn-sm btn-outline-secondary rounded-pill">
+                <i class="bi bi-arrow-left"></i> Back to pet details
+            </a>
+            <span class="text-muted">&bull;</span>
+            <span class="small text-muted">Veterinary Records</span>
+        </div>
+
+        <div class="card border-0 rounded-4 shadow-sm p-4 bg-white mb-4">
+            <h3 class="fw-bold mb-1">
+                <i class="bi bi-pencil-square text-success me-2"></i>Edit Care Record
+            </h3>
+            <p class="text-muted small mb-4">Update treatment details or adjust upcoming booster reminder date.</p>
+
+            <form asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 p-2 small mb-3"></div>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="PetId" />
+
+                <div class="mb-3">
+                    <label asp-for="VaccineName" class="form-label fw-bold small">Vaccine / Treatment Name</label>
+                    <input asp-for="VaccineName" class="form-control" />
+                    <span asp-validation-for="VaccineName" class="text-danger small"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <label asp-for="DateGiven" class="form-label fw-bold small">Administration Date</label>
+                        <input asp-for="DateGiven" type="date" class="form-control" />
+                        <span asp-validation-for="DateGiven" class="text-danger small"></span>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <label asp-for="NextDueDate" class="form-label fw-bold small">Next Booster Due (Optional)</label>
+                        <input asp-for="NextDueDate" type="date" class="form-control" />
+                        <span asp-validation-for="NextDueDate" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Notes" class="form-label fw-bold small">Clinical Notes</label>
+                    <input asp-for="Notes" class="form-control" />
+                    <span asp-validation-for="Notes" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <button type="submit" class="btn btn-success btn-lg rounded-pill px-4">
+                        <i class="bi bi-check-lg me-1"></i> Update Record
+                    </button>
+                    <a asp-controller="Pets" asp-action="Details" asp-route-id="@Model.PetId" class="btn btn-outline-secondary rounded-pill px-3">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,243 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Home - Compassionate Pet Adoption & Care";
+    var isStaff = !string.IsNullOrEmpty(Context.Session.GetString("AdminName"));
+}
+
+<!-- Hero Showcase Banner -->
+<section class="hero-wrapper fade-in-up">
+    <div class="row align-items-center">
+        <div class="col-12 col-lg-8">
+            <div class="hero-pill">
+                <span>✨</span>
+                <span>Connecting Rescued Pets With Loving Families</span>
+            </div>
+            
+            <h1 class="hero-title">
+                Find your new best friend today 🐾
+            </h1>
+            
+            <p class="hero-subtitle">
+                Browse healthy, vaccinated pets awaiting a forever home. Explore medical records, shortlist your favourites, and submit your adoption application online in minutes.
+            </p>
+            
+            <div class="d-flex flex-wrap gap-3">
+                <a class="btn btn-light btn-lg d-flex align-items-center gap-2" asp-controller="Pets" asp-action="Index">
+                    <i class="bi bi-search-heart text-success"></i>
+                    <span>Find a Pet</span>
+                </a>
+                <a class="btn btn-outline-light btn-lg d-flex align-items-center gap-2" asp-controller="Applications" asp-action="Track">
+                    <i class="bi bi-clock-history"></i>
+                    <span>Track My Application</span>
+                </a>
+            </div>
+
+            <div class="hero-badges-strip">
+                <div class="hero-feature-item">
+                    <i class="bi bi-shield-check"></i>
+                    <span>100% Medically Checked</span>
+                </div>
+                <div class="hero-feature-item">
+                    <i class="bi bi-heart-pulse"></i>
+                    <span>Vaccination Records Tracked</span>
+                </div>
+                <div class="hero-feature-item">
+                    <i class="bi bi-check2-circle"></i>
+                    <span>Verified Adoption Process</span>
+                </div>
+                <div class="hero-feature-item">
+                    <i class="bi bi-lightning-charge"></i>
+                    <span>Real-time State Tracking</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Staff Action Alert (If Pending Applications Exist) -->
+@if (isStaff && Model.PendingApplications > 0)
+{
+    <div class="alert alert-warning border-0 rounded-4 shadow-sm p-3 mb-4 d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div class="d-flex align-items-center gap-3">
+            <span class="fs-4 text-warning"><i class="bi bi-bell-fill"></i></span>
+            <div>
+                <strong class="text-dark">Staff Action Required:</strong>
+                <span class="text-muted">You have <strong>@Model.PendingApplications</strong> pending adoption application(s) awaiting review.</span>
+            </div>
+        </div>
+        <a class="btn btn-sm btn-dark rounded-pill px-3" asp-controller="Applications" asp-action="Index" asp-route-status="Pending">
+            Review Applications &raquo;
+        </a>
+    </div>
+}
+
+<!-- Dynamic Shelter Stats Strip -->
+<div class="row g-3 mb-5">
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon-bubble green">
+                <i class="bi bi-house-heart"></i>
+            </div>
+            <div>
+                <div class="stat-number text-success">@Model.AvailablePets</div>
+                <p class="stat-label">Awaiting Homes</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon-bubble blue">
+                <i class="bi bi-emoji-smile"></i>
+            </div>
+            <div>
+                <div class="stat-number text-primary">@Model.AdoptedPets</div>
+                <p class="stat-label">Happy Adoptions</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon-bubble amber">
+                <i class="bi bi-clipboard2-pulse"></i>
+            </div>
+            <div>
+                <div class="stat-number" style="color: var(--accent-amber);">100%</div>
+                <p class="stat-label">Care Tracked</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon-bubble purple">
+                <i class="bi bi-award"></i>
+            </div>
+            <div>
+                <div class="stat-number" style="color: var(--accent-purple);">4+</div>
+                <p class="stat-label">Species Rescued</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Category Filter Pills Bar -->
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <div>
+        <h4 class="fw-bold mb-1">Explore by Category</h4>
+        <p class="text-muted small mb-0">Select your preferred companion species to view available pets</p>
+    </div>
+    <a asp-controller="Pets" asp-action="Index" class="btn btn-sm btn-outline-success rounded-pill px-3">
+        See All Pets <i class="bi bi-arrow-right"></i>
+    </a>
+</div>
+
+<div class="category-chips-bar mb-4">
+    <a asp-controller="Pets" asp-action="Index" class="category-chip active">
+        <span>🐾</span> All Species
+    </a>
+    <a asp-controller="Pets" asp-action="Index" asp-route-species="Dog" class="category-chip">
+        <span>🐶</span> Dogs &amp; Puppies
+    </a>
+    <a asp-controller="Pets" asp-action="Index" asp-route-species="Cat" class="category-chip">
+        <span>🐱</span> Cats &amp; Kittens
+    </a>
+    <a asp-controller="Pets" asp-action="Index" asp-route-species="Rabbit" class="category-chip">
+        <span>🐰</span> Bunnies &amp; Rabbits
+    </a>
+    <a asp-controller="Pets" asp-action="Index" asp-route-species="Bird" class="category-chip">
+        <span>🐦</span> Birds &amp; Parakeets
+    </a>
+</div>
+
+<!-- Newest Arrivals Section -->
+<div class="d-flex justify-content-between align-items-end mb-3">
+    <div>
+        <h3 class="fw-bold mb-1">Newest Arrivals Waiting for Love</h3>
+        <p class="text-muted mb-0">These adorable rescues were recently added and are eager to meet their new family.</p>
+    </div>
+    <a asp-controller="Pets" asp-action="Index" class="fw-bold text-success text-decoration-none d-none d-md-inline-block">
+        Browse complete gallery &raquo;
+    </a>
+</div>
+
+<div class="row g-4 mb-5">
+    @foreach (var pet in Model.LatestPets)
+    {
+        <div class="col-12 col-sm-6 col-lg-4">
+            <partial name="_PetCard" model="pet" />
+        </div>
+    }
+    @if (!Model.LatestPets.Any())
+    {
+        <div class="col-12 text-center py-5">
+            <div class="fs-1 mb-2">🏡</div>
+            <h5 class="text-muted">No pets currently in this section.</h5>
+            <p class="text-muted small">Please check back soon or browse all registered rescues.</p>
+            <a asp-controller="Pets" asp-action="Index" class="btn btn-success rounded-pill">View All Rescues</a>
+        </div>
+    }
+</div>
+
+<!-- Step-by-Step Adoption Process (Interactive Feature for Faculty Presentation) -->
+<section class="my-5 py-4 border-top">
+    <div class="text-center mb-4">
+        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 mb-2">
+            Simple &amp; Transparent
+        </span>
+        <h3 class="fw-bold">How the Adoption Journey Works</h3>
+        <p class="text-muted" style="max-width: 600px; margin: 0 auto;">
+            Our 4-step workflow ensures pets find the right family and adopters receive comprehensive care history.
+        </p>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="step-card">
+                <div class="step-badge">1</div>
+                <h5>Browse &amp; Shortlist</h5>
+                <p>Filter rescues by breed, age, and species. Save favorites to your browser session shortlist.</p>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="step-card">
+                <div class="step-badge">2</div>
+                <h5>Submit Application</h5>
+                <p>Fill out our simple application form with your living conditions and pet experience.</p>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="step-card">
+                <div class="step-badge">3</div>
+                <h5>Shelter Review</h5>
+                <p>Shelter staff review your details, check care compatibility, and approve your request.</p>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="step-card">
+                <div class="step-badge">4</div>
+                <h5>Welcome Home!</h5>
+                <p>Receive your pet's complete vaccination records and welcome your new companion home.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Banner -->
+<section class="p-4 p-md-5 rounded-4 text-white text-center" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="fs-1 mb-2">🐾</div>
+            <h3 class="fw-bold text-white mb-2">Can't adopt right now?</h3>
+            <p class="text-white-50 mb-4">
+                You can still make a life-changing difference! Share pet profiles with friends, volunteer at the sanctuary, or foster a rescue during recovery.
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a asp-controller="Pets" asp-action="Index" class="btn btn-success btn-lg rounded-pill px-4">
+                    Explore All Rescues
+                </a>
+                <a asp-controller="Applications" asp-action="Track" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                    Track Existing Application
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

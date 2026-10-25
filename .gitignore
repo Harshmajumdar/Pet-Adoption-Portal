@@ -1,0 +1,26 @@
+
+## Visual Studio / .NET
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+*.log
+
+## Build outputs
+[Dd]ebug/
+[Rr]elease/
+
+## User-specific local settings
+*.local.json
+
+## Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+## OS-generated files
+.DS_Store
+Thumbs.db
+desktop.ini
